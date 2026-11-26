@@ -534,6 +534,15 @@
       .metrics-grid { grid-template-columns: repeat(4, 1fr); }
     }
 
+  
+    .history-list{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+    .history-item{background:var(--card-bg);border:1px solid var(--surface-border);border-radius:12px;padding:12px;display:grid;gap:8px}
+    .history-meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;color:var(--text-muted);font-size:.78rem}
+    .history-text{font-size:.9rem;overflow-wrap:anywhere}
+    .history-actions{display:flex;gap:8px;flex-wrap:wrap}
+    .history-actions button{background:var(--surface);border:1px solid var(--surface-border);color:var(--text);border-radius:8px;padding:8px 12px;min-height:40px}
+    .history-empty{color:var(--text-muted);font-size:.88rem;padding:10px 0}
+
   </style>
   <!-- ONNX Runtime Web (WASM SIMD engine) -->
   <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/ort.all.min.js"></script>
@@ -755,6 +764,14 @@
           <div id="stat-phonemes" class="phoneme-card">-</div>
         </div>
       </div>
+      <section class="output-card" id="history-section">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
+          <label style="margin:0">🕘 Riwayat Audio Terbaru</label>
+          <button type="button" id="clear-history" class="btn-download">Hapus riwayat</button>
+        </div>
+        <p class="note">Maksimal 10 hasil terakhir disimpan di penyimpanan lokal browser HP ini.</p>
+        <div id="history-list" class="history-list"><div class="history-empty">Belum ada riwayat audio.</div></div>
+      </section>
     </main>
 
     <footer>
