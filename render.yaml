@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: ai-voice-studio-api
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: apt-get update && apt-get install -y ffmpeg && pip install -r requirements.txt && python -m piper.download_voices --download-dir voices en_US-lessac-medium && python -m piper.download_voices --download-dir voices id_ID-news_tts-medium
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
