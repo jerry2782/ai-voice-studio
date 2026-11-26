@@ -2,7 +2,7 @@
 <html lang="id"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#101426"><link rel="manifest" href="./manifest.json">
-<title>AI Voice Studio V0.3.1</title>
+<title>AI Voice Studio V0.3.2</title>
 <script src="https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js"></script>
 <style>
 :root{--bg:#f4f6fb;--panel:#fff;--soft:#eef1f8;--text:#182033;--muted:#69748a;--line:#e1e6f0;--accent:#6558e8}
@@ -25,13 +25,13 @@ label{display:block;font-weight:650;font-size:13px;margin:15px 0 7px}textarea,se
 <body data-theme="dark">
 <div class="app"><aside class="side"><div class="brand">〽 AI Voice Studio</div>
 <nav class="nav"><button class="active" data-page="home">⌂　Beranda</button><button data-page="create">🎙　Buat Suara</button><button data-page="voices">♬　Koleksi Suara</button><button data-page="audio">▤　Audio Saya</button><button data-page="settings">⚙　Pengaturan</button></nav>
-<div class="note">V0.3.1 · Browser-Based TTS<br>Tanpa backend dan API key.</div></aside>
-<main class="main"><header class="top"><b>AI Voice Studio <span class="hint">/ V0.3.1</span></b><button class="theme" id="themeBtn">☀ Light mode</button></header>
+<div class="note">V0.3.2 · Browser-Based TTS<br>Tanpa backend dan API key.</div></aside>
+<main class="main"><header class="top"><b>AI Voice Studio <span class="hint">/ V0.3.2</span></b><button class="theme" id="themeBtn">☀ Light mode</button></header>
 <div class="content">
 <section class="page active" id="home"><p class="pill">Browser-Based TTS</p><h1>Buat suara jadi lebih mudah.</h1><p class="muted">Ubah tulisan menjadi suara AI langsung di HP atau PC.</p>
 <div class="card"><h2>Studio suara pribadi kamu</h2><p class="muted">Teks diproses di perangkat. Tidak perlu akun, server, atau API key.</p><button class="btn" onclick="showPage('create')">＋ Buat suara baru</button></div>
 <div class="stats"><div class="stat"><b id="statAudio">0</b><span class="hint">Audio dibuat</span></div><div class="stat"><b>4</b><span class="hint">Pilihan suara</span></div><div class="stat"><b>2</b><span class="hint">Tema tampilan</span></div></div>
-<div class="card"><b>Informasi penting</b><p class="hint">V0.3.1 memakai model Kokoro-82M. Pengunduhan pertama bisa puluhan hingga sekitar 100 MB. Model awal ini mendukung suara English, belum Bahasa Indonesia. Gunakan Wi-Fi dan perangkat dengan memori cukup.</p></div></section>
+<div class="card"><b>Informasi penting</b><p class="hint">V0.3.2 memakai model Kokoro-82M. Pengunduhan pertama bisa puluhan hingga sekitar 100 MB. Model awal ini mendukung suara English, belum Bahasa Indonesia. Gunakan Wi-Fi dan perangkat dengan memori cukup.</p></div></section>
 <section class="page" id="create"><h1>Buat Suara Baru</h1><p class="muted">Generate audio di browser kamu.</p><div class="grid"><div class="card">
 <label for="script">Masukkan teks (English)</label><textarea id="script" maxlength="2500" placeholder="Type or paste your English text here..."></textarea><div class="hint" style="text-align:right"><span id="count">0</span>/2500</div>
 <div class="row"><div><label>Format download</label><select id="format"><option value="mp3">MP3</option><option value="wav">WAV</option></select></div><div><label>Kecepatan</label><select id="speed"><option value="1">Normal</option><option value=".85">Lambat</option><option value="1.15">Cepat</option></select></div></div>
@@ -50,7 +50,11 @@ label{display:block;font-weight:650;font-size:13px;margin:15px 0 7px}textarea,se
 </div></main></div>
 <nav class="bottom"><button class="active" data-page="home"><span>⌂</span>Beranda</button><button data-page="create"><span>🎙</span>Buat</button><button data-page="voices"><span>♬</span>Suara</button><button data-page="audio"><span>▤</span>Audio</button><button data-page="settings"><span>⚙</span>Setelan</button></nav>
 <script type="module">
-import { KokoroTTS } from "https://esm.sh/kokoro-js";
+import { KokoroTTS, env } from "https://esm.sh/kokoro-js";
+env.useFS = false;
+env.useFSCache = false;
+env.useBrowserCache = true;
+env.useWasmCache = true;
 const $=id=>document.getElementById(id);let model=null,voice='af_heart',blob=null,history=[];
 function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===id));document.querySelectorAll('[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===id));scrollTo(0,0)}window.showPage=showPage;document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>showPage(b.dataset.page));
 function theme(){const dark=document.body.dataset.theme!=='dark';document.body.dataset.theme=dark?'dark':'light';$('themeBtn').textContent=dark?'☀ Light mode':'☾ Dark mode';localStorage.setItem('avs-theme',document.body.dataset.theme)}if(localStorage.getItem('avs-theme'))document.body.dataset.theme=localStorage.getItem('avs-theme');$('themeBtn').textContent=document.body.dataset.theme==='dark'?'☀ Light mode':'☾ Dark mode';$('themeBtn').onclick=$('themeBtn2').onclick=theme;
