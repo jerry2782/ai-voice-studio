@@ -58,9 +58,92 @@ let cloneLang = "id";
 let cloneAnalysisResult = null;
 let audioContext = null;
 
+
+const historyList = document.getElementById("history-list");
+const clearHistoryButton = document.getElementById("clear-history");
+let historyObjectUrls = [];
+
+function historyTransaction(mode, callback) {
+  return openCacheDb().then(db => new Promise((resolve, reject) => {
+    const tx = db.transaction(HISTORY_STORE, mode);
+    callback(tx.objectStore(HISTORY_STORE), resolve, reject);
+    tx.onerror = () => reject(tx.error);
+  }));
+}
+
+async function saveAudioHistory(record) {
+  const db = await openCacheDb();
+  await new Promise((resolve, reject) => {
+    const tx = db.transaction(HISTORY_STORE, "readwrite");
+    tx.objectStore(HISTORY_STORE).put(record);
+    tx.oncomplete = resolve;
+    tx.onerror = () => reject(tx.error);
+  });
+  const all = await new Promise((resolve, reject) => {
+    const tx = db.transaction(HISTORY_STORE, "readonly");
+    const req = tx.objectStore(HISTORY_STORE).getAll();
+    req.onsuccess = () => resolve(req.result || []);
+    req.onerror = () => reject(req.error);
+  });
+  all.sort((a,b) => b.createdAt - a.createdAt);
+  if (all.length > 10) {
+    await new Promise((resolve,reject) => {
+      const tx=db.transaction(HISTORY_STORE,"readwrite");
+      all.slice(10).forEach(item=>tx.objectStore(HISTORY_STORE).delete(item.id));
+      tx.oncomplete=resolve; tx.onerror=()=>reject(tx.error);
+    });
+  }
+  await renderAudioHistory();
+}
+
+async function renderAudioHistory() {
+  if (!historyList) return;
+  historyObjectUrls.forEach(url => URL.revokeObjectURL(url));
+  historyObjectUrls = [];
+  const db = await openCacheDb();
+  const records = await new Promise((resolve,reject) => {
+    const tx=db.transaction(HISTORY_STORE,"readonly");
+    const req=tx.objectStore(HISTORY_STORE).getAll();
+    req.onsuccess=()=>resolve(req.result||[]);
+    req.onerror=()=>reject(req.error);
+  });
+  records.sort((a,b)=>b.createdAt-a.createdAt);
+  if (!records.length) {
+    historyList.innerHTML='<div class="history-empty">Belum ada riwayat audio.</div>';
+    return;
+  }
+  historyList.replaceChildren();
+  records.forEach(record => {
+    const url=URL.createObjectURL(record.blob);
+    historyObjectUrls.push(url);
+    const item=document.createElement("article");
+    item.className="history-item";
+    const meta=document.createElement("div"); meta.className="history-meta";
+    const date=document.createElement("span"); date.textContent=new Date(record.createdAt).toLocaleString("id-ID");
+    const persona=document.createElement("span"); persona.textContent=record.speaker+" · "+record.lang.toUpperCase();
+    meta.append(date,persona);
+    const text=document.createElement("div"); text.className="history-text"; text.textContent=record.text;
+    const actions=document.createElement("div"); actions.className="history-actions";
+    const play=document.createElement("button"); play.type="button"; play.textContent="▶ Putar";
+    play.addEventListener("click",()=>{audioPlayer.src=url;outputSection.classList.remove("hidden");audioPlayer.play();});
+    const download=document.createElement("a"); download.className="btn-download"; download.href=url; download.download="ai-voice-"+record.id+".wav"; download.textContent="⬇ Unduh WAV";
+    actions.append(play,download); item.append(meta,text,actions); historyList.append(item);
+  });
+}
+
+if (clearHistoryButton) {
+  clearHistoryButton.addEventListener("click", async () => {
+    if (!confirm("Hapus semua riwayat audio yang tersimpan di browser ini?")) return;
+    const db=await openCacheDb();
+    await new Promise((resolve,reject)=>{const tx=db.transaction(HISTORY_STORE,"readwrite");tx.objectStore(HISTORY_STORE).clear();tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);});
+    await renderAudioHistory();
+  });
+}
+
 // IndexedDB Caching Constants
 const DB_NAME = "ArboTTS_Cache_v3";
 const STORE_NAME = "models";
+const HISTORY_STORE = "audio_history";
 const DEFAULT_MODEL_NAME = "arbo_paradee_8m.onnx";
 const MODEL_URL = `https://arbo-team.github.io/arbotts-demo/models/${DEFAULT_MODEL_NAME}`;
 const CONFIG_URL = "https://arbo-team.github.io/arbotts-demo/models/vocab.json";
@@ -78,11 +161,14 @@ function getAudioContext() {
 
 function openCacheDb() {
   return new Promise((resolve, reject) => {
-    const req = indexedDB.open(DB_NAME, 1);
+    const req = indexedDB.open(DB_NAME, 2);
     req.onupgradeneeded = (e) => {
       const db = e.target.result;
       if (!db.objectStoreNames.contains(STORE_NAME)) {
         db.createObjectStore(STORE_NAME);
+      }
+      if (!db.objectStoreNames.contains(HISTORY_STORE)) {
+        db.createObjectStore(HISTORY_STORE, { keyPath: "id" });
       }
     };
     req.onsuccess = () => resolve(req.result);
@@ -400,6 +486,14 @@ async function runSynthesis({ text, lang, speakerKey, dspRecipe, speed, modeLabe
 
   // 5. Encode 16-bit PCM WAV
   const wavBlob = encodeWav(processedAudio, 24000);
+  try {
+    await saveAudioHistory({
+      id: String(Date.now()) + "-" + Math.random().toString(36).slice(2,7),
+      text, lang, speaker: modeLabel, blob: wavBlob, createdAt: Date.now()
+    });
+  } catch (historyError) {
+    console.warn("Riwayat audio tidak dapat disimpan:", historyError);
+  }
   if (currentBlobUrl) URL.revokeObjectURL(currentBlobUrl);
   currentBlobUrl = URL.createObjectURL(wavBlob);
 
@@ -482,5 +576,6 @@ btnCloneSynthesize.addEventListener("click", async () => {
 
 // Auto-start on load
 window.addEventListener("DOMContentLoaded", () => {
+  renderAudioHistory().catch(err => console.warn("Gagal memuat riwayat:", err));
   initModel();
 });
