@@ -1,85 +1,66 @@
 <!doctype html>
-<html lang="id">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#101426">
-<link rel="manifest" href="./manifest.json">
-<title>AI Voice Studio — Prototype V1.0</title>
+<html lang="id"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101426"><link rel="manifest" href="./manifest.json">
+<title>AI Voice Studio V0.3</title>
+<script src="https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js"></script>
 <style>
-:root{--bg:#f4f6fb;--panel:#fff;--panel2:#eef1f8;--text:#182033;--muted:#69748a;--line:#e1e6f0;--accent:#6558e8;--accent2:#8a7dff;--good:#16845d;--shadow:0 10px 30px #24345b12}
-[data-theme="dark"]{--bg:#0d1020;--panel:#171b2e;--panel2:#202640;--text:#f2f4ff;--muted:#a6aec4;--line:#2c3450;--accent:#8a7dff;--accent2:#a99fff;--good:#52d5a0;--shadow:0 12px 32px #0005}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 Inter,system-ui,-apple-system,Segoe UI,sans-serif}
-button,select,textarea{font:inherit}button{cursor:pointer}.app{min-height:100vh;display:grid;grid-template-columns:238px 1fr}
-.sidebar{background:var(--panel);border-right:1px solid var(--line);padding:24px 16px;display:flex;flex-direction:column;gap:24px}
-.brand{display:flex;align-items:center;gap:11px;padding:2px 8px}.logo{width:38px;height:38px;border-radius:13px;background:linear-gradient(135deg,var(--accent),#28b8d6);display:grid;place-items:center;color:white;font-size:20px;font-weight:800}.brand strong{display:block;font-size:15px}.brand small{color:var(--muted);font-size:11px}
-.nav{display:grid;gap:6px}.nav button{border:0;background:transparent;color:var(--muted);padding:12px 13px;border-radius:12px;text-align:left;display:flex;gap:12px;align-items:center}.nav button.active,.nav button:hover{background:var(--panel2);color:var(--accent);font-weight:650}.nav .ico{width:20px;text-align:center;font-size:17px}
-.side-note{margin-top:auto;padding:14px;border:1px solid var(--line);border-radius:14px;color:var(--muted);font-size:12px}
-.main{min-width:0}.topbar{height:72px;padding:0 34px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);background:var(--panel)}.top-title{font-weight:700}.top-actions{display:flex;gap:10px;align-items:center}.theme-btn,.profile{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:11px;padding:9px 12px}.profile{border-radius:50%;width:38px;height:38px;padding:0;background:var(--panel2)}
-.content{max-width:1120px;margin:auto;padding:34px}.page{display:none}.page.active{display:block}.eyebrow{color:var(--accent);font-size:12px;font-weight:750;letter-spacing:.08em;text-transform:uppercase}.heading{font-size:28px;line-height:1.2;margin:7px 0}.sub{color:var(--muted);margin:0 0 24px}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:var(--shadow)}.grid{display:grid;grid-template-columns:1.4fr 1fr;gap:18px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:20px 0}.stat{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:17px}.stat b{font-size:24px;display:block}.stat span{font-size:12px;color:var(--muted)}
-label{display:block;font-size:13px;font-weight:650;margin:17px 0 8px}textarea,select,input[type=text]{width:100%;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--text);padding:13px;outline:none}textarea{min-height:150px;resize:vertical}textarea:focus,select:focus{border-color:var(--accent)}
-.row{display:flex;gap:12px}.row>*{flex:1;min-width:0}.voice{border:1px solid var(--line);border-radius:13px;padding:13px;display:flex;gap:10px;align-items:center;margin-top:9px;cursor:pointer}.voice.selected{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,var(--panel))}.avatar{width:38px;height:38px;border-radius:50%;background:var(--panel2);display:grid;place-items:center;font-size:18px}.voice small{display:block;color:var(--muted)}.check{margin-left:auto;color:var(--accent);font-weight:800}
-.btn{border:0;border-radius:12px;padding:12px 17px;background:var(--accent);color:#fff;font-weight:700}.btn:hover{filter:brightness(1.08)}.btn.secondary{background:var(--panel2);color:var(--text);border:1px solid var(--line)}.btn:disabled{opacity:.45;cursor:not-allowed}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.hint{font-size:12px;color:var(--muted)}.result{display:none;margin-top:18px;padding:15px;border:1px solid var(--line);border-radius:14px;background:var(--panel2)}.result.show{display:block}.fake-wave{height:42px;display:flex;align-items:center;gap:3px;margin:10px 0}.fake-wave i{display:block;width:4px;border-radius:8px;background:var(--accent);opacity:.8}
-.list-item{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--line)}.list-item:last-child{border:0}.pill{font-size:11px;color:var(--good);background:color-mix(in srgb,var(--good) 12%,transparent);padding:5px 9px;border-radius:99px}
-.empty{padding:32px;text-align:center;color:var(--muted)}.settings-row{display:flex;align-items:center;justify-content:space-between;padding:16px 0;border-bottom:1px solid var(--line)}.toggle{accent-color:var(--accent);width:18px;height:18px}
-.mobile-head{display:none}
-@media(max-width:800px){.app{display:block;padding-bottom:72px}.sidebar{display:none}.topbar{height:62px;padding:0 16px;position:sticky;top:0;z-index:3}.content{padding:22px 15px}.heading{font-size:24px}.grid{grid-template-columns:1fr}.stats{gap:8px}.stat{padding:12px}.stat b{font-size:20px}.bottomnav{display:flex!important;position:fixed;bottom:0;left:0;right:0;background:var(--panel);border-top:1px solid var(--line);z-index:5;justify-content:space-around;padding:8px 3px calc(8px + env(safe-area-inset-bottom))}.bottomnav button{border:0;background:none;color:var(--muted);font-size:10px;display:grid;gap:3px;justify-items:center}.bottomnav button.active{color:var(--accent);font-weight:750}.bottomnav span{font-size:18px}.content .card{padding:17px}}
-.bottomnav{display:none}
+:root{--bg:#f4f6fb;--panel:#fff;--soft:#eef1f8;--text:#182033;--muted:#69748a;--line:#e1e6f0;--accent:#6558e8}
+[data-theme=dark]{--bg:#0d1020;--panel:#171b2e;--soft:#202640;--text:#f2f4ff;--muted:#a6aec4;--line:#2c3450;--accent:#8a7dff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,sans-serif}
+.app{min-height:100vh;display:grid;grid-template-columns:220px 1fr}.side{background:var(--panel);border-right:1px solid var(--line);padding:22px 15px}
+.brand{font-weight:800;font-size:18px;margin:5px 8px 25px}.nav button{display:block;width:100%;padding:12px;border:0;border-radius:10px;text-align:left;background:none;color:var(--muted);margin:4px 0}.nav button.active{background:var(--soft);color:var(--accent);font-weight:700}
+.note{margin-top:40px;padding:12px;border:1px solid var(--line);border-radius:12px;color:var(--muted);font-size:12px}
+.main{min-width:0}.top{height:64px;background:var(--panel);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 25px}
+.content{max-width:1050px;margin:auto;padding:28px}.page{display:none}.page.active{display:block}h1{font-size:28px;margin:5px 0 8px}.muted,.hint{color:var(--muted)}.hint{font-size:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:17px;padding:20px;margin:14px 0}.grid{display:grid;grid-template-columns:1.3fr 1fr;gap:15px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.stat{padding:15px;background:var(--panel);border:1px solid var(--line);border-radius:14px;margin:14px 0}.stat b{display:block;font-size:22px}
+label{display:block;font-weight:650;font-size:13px;margin:15px 0 7px}textarea,select{width:100%;padding:12px;border-radius:11px;border:1px solid var(--line);background:var(--bg);color:var(--text);font:inherit}textarea{min-height:140px}
+.row{display:flex;gap:10px}.row>div{flex:1;min-width:0}.voice{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:12px;padding:11px;margin:8px 0;cursor:pointer}.voice.selected{border-color:var(--accent);background:var(--soft)}.voice small{display:block;color:var(--muted)}.check{margin-left:auto;color:var(--accent)}
+.btn{border:0;border-radius:11px;padding:11px 15px;background:var(--accent);color:white;font-weight:700;cursor:pointer}.secondary{background:var(--soft);color:var(--text);border:1px solid var(--line)}.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}
+.status,.result{display:none;background:var(--soft);border:1px solid var(--line);padding:13px;border-radius:12px;margin-top:14px}.status.show,.result.show{display:block}.progress{height:7px;background:var(--line);border-radius:9px;margin-top:8px;overflow:hidden}.progress span{display:block;height:100%;background:var(--accent);width:0}.result audio{width:100%;margin:10px 0}
+.item{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}.pill{font-size:11px;color:#16845d;background:#16845d18;padding:4px 8px;border-radius:20px}.theme{padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--text)}.bottom{display:none}
+@media(max-width:760px){.app{display:block;padding-bottom:70px}.side{display:none}.top{height:58px;padding:0 14px;position:sticky;top:0;z-index:2}.content{padding:18px 13px}h1{font-size:24px}.grid{grid-template-columns:1fr}.card{padding:16px}.bottom{display:flex;position:fixed;bottom:0;left:0;right:0;justify-content:space-around;background:var(--panel);border-top:1px solid var(--line);padding:8px 0 calc(8px + env(safe-area-inset-bottom));z-index:5}.bottom button{border:0;background:none;color:var(--muted);font-size:10px}.bottom button.active{color:var(--accent);font-weight:700}.bottom span{display:block;font-size:18px}}
 </style></head>
-<body data-theme="light">
-<div class="app">
-<aside class="sidebar">
- <div class="brand"><div class="logo">〽</div><div><strong>AI Voice Studio</strong><small>Simple voice creation</small></div></div>
- <nav class="nav" id="sideNav">
-  <button class="active" data-page="home"><span class="ico">⌂</span>Beranda</button>
-  <button data-page="create"><span class="ico">🎙</span>Buat Suara</button>
-  <button data-page="voices"><span class="ico">♬</span>Koleksi Suara</button>
-  <button data-page="audio"><span class="ico">▤</span>Audio Saya</button>
-  <button data-page="settings"><span class="ico">⚙</span>Pengaturan</button>
- </nav>
- <div class="side-note">Prototype V1.0<br>Mesin suara belum terhubung. Generate saat ini hanya simulasi antarmuka.</div>
-</aside>
-<main class="main">
-<header class="topbar"><div class="top-title">AI Voice Studio <span class="hint">/ Prototype</span></div><div class="top-actions"><button class="theme-btn" id="themeBtn">☾ Dark mode</button><div class="profile">E</div></div></header>
+<body data-theme="dark">
+<div class="app"><aside class="side"><div class="brand">〽 AI Voice Studio</div>
+<nav class="nav"><button class="active" data-page="home">⌂　Beranda</button><button data-page="create">🎙　Buat Suara</button><button data-page="voices">♬　Koleksi Suara</button><button data-page="audio">▤　Audio Saya</button><button data-page="settings">⚙　Pengaturan</button></nav>
+<div class="note">V0.3 · Browser-Based TTS<br>Tanpa backend dan API key.</div></aside>
+<main class="main"><header class="top"><b>AI Voice Studio <span class="hint">/ V0.3</span></b><button class="theme" id="themeBtn">☀ Light mode</button></header>
 <div class="content">
-<section class="page active" id="home">
- <div class="eyebrow">Selamat datang</div><h1 class="heading">Buat suara jadi lebih mudah.</h1><p class="sub">Ubah tulisan menjadi audio dalam beberapa langkah sederhana.</p>
- <div class="card" style="background:linear-gradient(120deg,var(--panel),color-mix(in srgb,var(--accent) 12%,var(--panel)))"><div class="eyebrow">Mulai dari sini</div><h2 style="margin:7px 0">Apa yang ingin kamu buat hari ini?</h2><p class="sub" style="margin-bottom:16px">Tulis naskah, pilih suara, lalu siapkan audio.</p><button class="btn" onclick="showPage('create')">＋ Buat suara baru</button></div>
- <div class="stats"><div class="stat"><b id="statAudio">0</b><span>Audio dibuat</span></div><div class="stat"><b>5</b><span>Menu utama</span></div><div class="stat"><b>2</b><span>Tema tampilan</span></div></div>
- <div class="grid"><div class="card"><h3 style="margin-top:0">Alur penggunaan</h3><div class="list-item"><span>① Masukkan teks</span><span class="pill">Langkah 1</span></div><div class="list-item"><span>② Pilih bahasa dan suara</span><span class="pill">Langkah 2</span></div><div class="list-item"><span>③ Generate dan unduh</span><span class="pill">Langkah 3</span></div></div><div class="card"><h3 style="margin-top:0">Terakhir dibuat</h3><div class="empty">Belum ada audio.<br>Audio yang dibuat akan muncul di sini.</div></div></div>
-</section>
-<section class="page" id="create">
- <div class="eyebrow">Text to Speech</div><h1 class="heading">Buat Suara Baru</h1><p class="sub">Cukup masukkan teks dan pilih suara yang kamu suka.</p>
- <div class="grid">
-  <div class="card">
-   <label for="script">1. Masukkan teks</label><textarea id="script" placeholder="Ketik atau tempel teks yang ingin diubah menjadi suara..."></textarea><div class="hint" style="text-align:right"><span id="count">0</span> karakter</div>
-   <div class="row"><div><label for="language">2. Bahasa</label><select id="language"><option>English (United States)</option><option>Bahasa Indonesia</option><option>English (United Kingdom)</option></select></div><div><label for="format">Format audio</label><select id="format"><option>MP3</option><option>WAV</option></select></div></div>
-   <label>3. Pilih suara</label>
-   <div class="voice selected" data-voice="Female — Elegant"><div class="avatar">♀</div><div><b>Female — Elegant</b><small>Lembut, hangat, profesional</small></div><span class="check">✓</span></div>
-   <div class="voice" data-voice="Female — Bright"><div class="avatar">♀</div><div><b>Female — Bright</b><small>Ceria, ramah, ekspresif</small></div></div>
-   <div class="voice" data-voice="Male — Professional"><div class="avatar">♂</div><div><b>Male — Professional</b><small>Jelas, tenang, tegas</small></div></div>
-   <div class="actions"><button class="btn" id="generate">✨ Generate Voice</button><button class="btn secondary" id="clear">Hapus teks</button></div>
-   <p class="hint">Catatan: tombol Generate pada prototype ini belum menghasilkan audio sungguhan.</p>
-  </div>
-  <div class="card"><h3 style="margin-top:0">Pengaturan suara</h3><label for="speed">Kecepatan</label><select id="speed"><option>Normal</option><option>Lambat</option><option>Cepat</option></select><label for="pitch">Nada suara</label><select id="pitch"><option>Normal</option><option>Lebih rendah</option><option>Lebih tinggi</option></select><label for="style">Gaya bicara</label><select id="style"><option>Natural</option><option>Pengumuman profesional</option><option>Storytelling</option><option>Ramah dan santai</option></select><div class="result" id="result"><b>Preview simulasi siap</b><div class="fake-wave" id="wave"></div><div class="hint">Audio belum tersedia sampai TTS engine diintegrasikan.</div></div></div>
- </div>
-</section>
-<section class="page" id="voices"><div class="eyebrow">Voice Library</div><h1 class="heading">Koleksi Suara</h1><p class="sub">Pilih karakter suara untuk kebutuhan berbeda.</p><div class="card"><div class="list-item"><div><b>Female — Elegant</b><div class="hint">Pengumuman, narasi profesional</div></div><span class="pill">Wanita</span></div><div class="list-item"><div><b>Female — Bright</b><div class="hint">Konten promosi, sapaan</div></div><span class="pill">Wanita</span></div><div class="list-item"><div><b>Male — Professional</b><div class="hint">Informasi, instruksi</div></div><span class="pill">Pria</span></div><p class="hint">Daftar ini adalah contoh pilihan UI. Ketersediaan suara sebenarnya mengikuti mesin TTS yang dipasang.</p></div></section>
-<section class="page" id="audio"><div class="eyebrow">Audio Library</div><h1 class="heading">Audio Saya</h1><p class="sub">Semua hasil produksi akan tersimpan di sini.</p><div class="card"><div class="empty">▤<h3>Belum ada audio</h3><p>Audio hasil generate akan tampil di halaman ini.</p><button class="btn" onclick="showPage('create')">Buat suara pertama</button></div></div></section>
-<section class="page" id="settings"><div class="eyebrow">Preferensi</div><h1 class="heading">Pengaturan</h1><p class="sub">Atur tampilan dan preferensi aplikasi.</p><div class="card"><div class="settings-row"><div><b>Tampilan aplikasi</b><div class="hint">Pilih mode terang atau gelap</div></div><button class="btn secondary" id="themeBtn2">Ganti tema</button></div><div class="settings-row"><div><b>Bahasa antarmuka</b><div class="hint">Bahasa Indonesia</div></div><span class="pill">Aktif</span></div><div class="settings-row"><div><b>Mesin suara</b><div class="hint">Belum dihubungkan</div></div><span class="pill" style="color:var(--muted)">Demo</span></div></div></section>
-</div></main>
-</div>
-<nav class="bottomnav" id="bottomNav"><button class="active" data-page="home"><span>⌂</span>Beranda</button><button data-page="create"><span>🎙</span>Buat</button><button data-page="voices"><span>♬</span>Suara</button><button data-page="audio"><span>▤</span>Audio</button><button data-page="settings"><span>⚙</span>Setelan</button></nav>
-<script>
-const body=document.body;const pages=[...document.querySelectorAll('.page')];function showPage(id){pages.forEach(p=>p.classList.toggle('active',p.id===id));document.querySelectorAll('[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===id));window.scrollTo({top:0,behavior:'smooth'})}
-document.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
-function toggleTheme(){let dark=body.dataset.theme!=='dark';body.dataset.theme=dark?'dark':'light';document.getElementById('themeBtn').textContent=dark?'☀ Light mode':'☾ Dark mode';}
-document.getElementById('themeBtn').onclick=toggleTheme;document.getElementById('themeBtn2').onclick=toggleTheme;
-const script=document.getElementById('script');script.addEventListener('input',()=>document.getElementById('count').textContent=script.value.length);
-document.querySelectorAll('.voice').forEach(v=>v.addEventListener('click',()=>{document.querySelectorAll('.voice').forEach(x=>{x.classList.remove('selected');x.querySelector('.check')?.remove()});v.classList.add('selected');let c=document.createElement('span');c.className='check';c.textContent='✓';v.append(c)}));
-document.getElementById('clear').onclick=()=>{script.value='';document.getElementById('count').textContent='0';document.getElementById('result').classList.remove('show')};
-document.getElementById('generate').onclick=()=>{if(!script.value.trim()){alert('Masukkan teks terlebih dahulu.');return}document.getElementById('result').classList.add('show');let wave=document.getElementById('wave');wave.innerHTML='';for(let i=0;i<48;i++){let bar=document.createElement('i');bar.style.height=(8+Math.random()*32)+'px';wave.append(bar)}};
-if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
-  navigator.serviceWorker.register('./sw.js').catch(() => {});
-}
+<section class="page active" id="home"><p class="pill">Browser-Based TTS</p><h1>Buat suara jadi lebih mudah.</h1><p class="muted">Ubah tulisan menjadi suara AI langsung di HP atau PC.</p>
+<div class="card"><h2>Studio suara pribadi kamu</h2><p class="muted">Teks diproses di perangkat. Tidak perlu akun, server, atau API key.</p><button class="btn" onclick="showPage('create')">＋ Buat suara baru</button></div>
+<div class="stats"><div class="stat"><b id="statAudio">0</b><span class="hint">Audio dibuat</span></div><div class="stat"><b>4</b><span class="hint">Pilihan suara</span></div><div class="stat"><b>2</b><span class="hint">Tema tampilan</span></div></div>
+<div class="card"><b>Informasi penting</b><p class="hint">V0.3 memakai model Kokoro-82M. Pengunduhan pertama bisa puluhan hingga sekitar 100 MB. Model awal ini mendukung suara English, belum Bahasa Indonesia. Gunakan Wi-Fi dan perangkat dengan memori cukup.</p></div></section>
+<section class="page" id="create"><h1>Buat Suara Baru</h1><p class="muted">Generate audio di browser kamu.</p><div class="grid"><div class="card">
+<label for="script">Masukkan teks (English)</label><textarea id="script" maxlength="2500" placeholder="Type or paste your English text here..."></textarea><div class="hint" style="text-align:right"><span id="count">0</span>/2500</div>
+<div class="row"><div><label>Format download</label><select id="format"><option value="mp3">MP3</option><option value="wav">WAV</option></select></div><div><label>Kecepatan</label><select id="speed"><option value="1">Normal</option><option value=".85">Lambat</option><option value="1.15">Cepat</option></select></div></div>
+<label>Pilih suara</label>
+<div class="voice selected" data-voice="af_heart"><span>♀</span><div><b>Heart — Female US</b><small>Natural, warm · English</small></div><span class="check">✓</span></div>
+<div class="voice" data-voice="af_bella"><span>♀</span><div><b>Bella — Female US</b><small>Expressive · English</small></div></div>
+<div class="voice" data-voice="af_nova"><span>♀</span><div><b>Nova — Female US</b><small>Bright · English</small></div></div>
+<div class="voice" data-voice="am_michael"><span>♂</span><div><b>Michael — Male US</b><small>Clear · English</small></div></div>
+<div class="actions"><button class="btn" id="generate">✨ Generate Voice</button><button class="btn secondary" id="clear">Hapus teks</button></div>
+<div class="status" id="status"><div id="statusText">Memuat mesin suara...</div><div class="progress"><span id="progressBar"></span></div></div>
+<div class="result" id="result"><b>Audio berhasil dibuat</b><audio id="player" controls></audio><div class="actions"><button class="btn" id="download">⬇ Download audio</button></div><p class="hint" id="audioInfo"></p></div></div>
+<div class="card"><h3>Status mesin AI</h3><div class="item"><span>Engine</span><b>Kokoro-82M</b></div><div class="item"><span>Proses</span><b>Di browser</b></div><div class="item"><span>API key</span><span class="pill">Tidak perlu</span></div><div class="item"><span>Bahasa</span><b>English</b></div><p class="hint">Pertama kali perlu internet untuk mengunduh model. Setelah itu browser dapat menggunakan cache. Performa tergantung perangkat.</p></div></div></section>
+<section class="page" id="voices"><h1>Koleksi Suara</h1><div class="card"><div class="item"><b>Heart · Female US</b><span class="pill">Wanita</span></div><div class="item"><b>Bella · Female US</b><span class="pill">Wanita</span></div><div class="item"><b>Nova · Female US</b><span class="pill">Wanita</span></div><div class="item"><b>Michael · Male US</b><span class="pill">Pria</span></div></div></section>
+<section class="page" id="audio"><h1>Audio Saya</h1><p class="muted">Hasil audio selama sesi browser ini.</p><div class="card" id="audioList"><p class="muted">Belum ada audio yang dibuat.</p></div></section>
+<section class="page" id="settings"><h1>Pengaturan</h1><div class="card"><div class="item"><b>Tampilan</b><button class="btn secondary" id="themeBtn2">Ganti tema</button></div><div class="item"><b>Mesin suara</b><span class="pill">Kokoro · lokal</span></div><div class="item"><b>Privasi</b><span class="pill">Teks tidak dikirim</span></div></div></section>
+</div></main></div>
+<nav class="bottom"><button class="active" data-page="home"><span>⌂</span>Beranda</button><button data-page="create"><span>🎙</span>Buat</button><button data-page="voices"><span>♬</span>Suara</button><button data-page="audio"><span>▤</span>Audio</button><button data-page="settings"><span>⚙</span>Setelan</button></nav>
+<script type="module">
+import { KokoroTTS } from "https://esm.sh/kokoro-js";
+const $=id=>document.getElementById(id);let model=null,voice='af_heart',blob=null,history=[];
+function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===id));document.querySelectorAll('[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===id));scrollTo(0,0)}window.showPage=showPage;document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>showPage(b.dataset.page));
+function theme(){const dark=document.body.dataset.theme!=='dark';document.body.dataset.theme=dark?'dark':'light';$('themeBtn').textContent=dark?'☀ Light mode':'☾ Dark mode';localStorage.setItem('avs-theme',document.body.dataset.theme)}if(localStorage.getItem('avs-theme'))document.body.dataset.theme=localStorage.getItem('avs-theme');$('themeBtn').textContent=document.body.dataset.theme==='dark'?'☀ Light mode':'☾ Dark mode';$('themeBtn').onclick=$('themeBtn2').onclick=theme;
+$('script').oninput=()=>$('count').textContent=$('script').value.length;document.querySelectorAll('.voice').forEach(b=>b.onclick=()=>{document.querySelectorAll('.voice').forEach(x=>{x.classList.remove('selected');x.querySelector('.check')?.remove()});b.classList.add('selected');const c=document.createElement('span');c.className='check';c.textContent='✓';b.append(c);voice=b.dataset.voice});
+function status(t,p){$('status').classList.add('show');$('statusText').textContent=t;$('progressBar').style.width=p+'%'}
+async function load(){if(model)return model;status('Mengunduh dan memuat model suara...',5);const device=navigator.gpu?'webgpu':'wasm';model=await KokoroTTS.from_pretrained('onnx-community/Kokoro-82M-v1.0-ONNX',{dtype:device==='webgpu'?'fp16':'q8',device,progress_callback:p=>status('Memuat model: '+(p?.status||'download')+' '+Math.round(p?.progress||0)+'%',p?.progress||8)});status('Mesin suara siap.',100);return model}
+function wav(samples,rate){const pcm=new Int16Array(samples.length);for(let i=0;i<samples.length;i++)pcm[i]=Math.max(-32768,Math.min(32767,samples[i]*32767));const b=new ArrayBuffer(44+pcm.length*2),v=new DataView(b),w=(o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i))};w(0,'RIFF');v.setUint32(4,36+pcm.length*2,true);w(8,'WAVE');w(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,rate,true);v.setUint32(28,rate*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);w(36,'data');v.setUint32(40,pcm.length*2,true);new Int16Array(b,44).set(pcm);return new Blob([b],{type:'audio/wav'})}
+function mp3(samples,rate){if(!window.lamejs?.Mp3Encoder)throw Error('Encoder MP3 belum termuat. Muat ulang halaman atau pilih WAV.');const enc=new lamejs.Mp3Encoder(1,rate,128),pcm=new Int16Array(samples.length),chunks=[];for(let i=0;i<samples.length;i++)pcm[i]=Math.max(-32768,Math.min(32767,samples[i]*32767));for(let i=0;i<pcm.length;i+=1152){const c=enc.encodeBuffer(pcm.subarray(i,i+1152));if(c.length)chunks.push(new Uint8Array(c))}const end=enc.flush();if(end.length)chunks.push(new Uint8Array(end));return new Blob(chunks,{type:'audio/mpeg'})}
+function save(b,name){const u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),20000)}
+$('generate').onclick=async()=>{const text=$('script').value.trim();if(!text)return alert('Masukkan teks terlebih dahulu.');$('generate').disabled=true;$('result').classList.remove('show');try{const t=await load();status('Menghasilkan suara...',20);const out=await t.generate(text,{voice,speed:Number($('speed').value)});const fmt=$('format').value;blob=fmt==='mp3'?mp3(out.audio,out.sampling_rate):wav(out.audio,out.sampling_rate);const url=URL.createObjectURL(blob);$('player').src=url;$('audioInfo').textContent=voice+' · '+out.sampling_rate+' Hz · '+fmt.toUpperCase();$('result').classList.add('show');const name='ai-voice-'+Date.now()+'.'+fmt;$('download').onclick=()=>save(blob,name);history.unshift({name,blob});$('statAudio').textContent=history.length;$('audioList').innerHTML='';history.forEach(x=>{const row=document.createElement('div');row.className='item';const title=document.createElement('b');title.textContent=x.name;const btn=document.createElement('button');btn.className='btn secondary';btn.textContent='Download';btn.onclick=()=>save(x.blob,x.name);row.append(title,btn);$('audioList').append(row)});status('Selesai! Audio siap diputar dan diunduh.',100)}catch(e){model=null;status('Gagal: '+(e.message||e),0);alert('Tidak berhasil membuat suara. '+(e.message||e))}finally{$('generate').disabled=false}};
+$('clear').onclick=()=>{$('script').value='';$('count').textContent='0';$('result').classList.remove('show');$('status').classList.remove('show')};
+if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
 </script></body></html>

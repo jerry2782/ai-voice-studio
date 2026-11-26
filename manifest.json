@@ -1,1 +1,1 @@
-{"name":"AI Voice Studio","short_name":"Voice Studio","start_url":"./","display":"standalone","background_color":"#0d1020","theme_color":"#101426","description":"Aplikasi sederhana untuk produksi suara AI."}
+{"name":"AI Voice Studio","short_name":"Voice Studio","start_url":"./","scope":"./","display":"standalone","background_color":"#0d1020","theme_color":"#101426","description":"Browser-based AI text-to-speech studio."}
