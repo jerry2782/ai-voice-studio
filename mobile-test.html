@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101426"><title>AI Voice Studio — Tes HP</title>
+<style>
+:root{color-scheme:dark;--bg:#0d1020;--panel:#171b2e;--text:#f2f4ff;--muted:#a6aec4;--line:#303954;--accent:#8a7dff;--ok:#35c99a;--warn:#f4bb59}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,sans-serif}
+main{max-width:650px;margin:auto;padding:22px 15px 45px}h1{font-size:25px;margin:8px 0}p{color:var(--muted)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;margin:14px 0}
+.item{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}.item:last-child{border:0}
+.val{font-weight:700;text-align:right}.ok{color:var(--ok)}.warn{color:var(--warn)}
+button,a{display:block;text-align:center;width:100%;padding:13px;border-radius:11px;border:1px solid var(--line);background:#252b48;color:white;text-decoration:none;font:inherit;margin-top:10px}
+.primary{background:var(--accent);border-color:var(--accent);font-weight:700}
+.small{font-size:12px;color:var(--muted)}
+</style></head>
+<body><main>
+<p>AI VOICE STUDIO · MOBILE EDITION</p><h1>Tes kesiapan HP</h1>
+<p>Halaman ini memeriksa dukungan browser sebelum kita memasang mesin suara ArboTTS Nano. Tes ini tidak mengunduh model dan tidak membuat audio.</p>
+<div class="card"><h2>Hasil pemeriksaan</h2><div id="results">Memeriksa perangkat...</div><button id="refresh">Periksa ulang</button></div>
+<div class="card"><h2>Uji suara resmi</h2><p>ArboTTS menyediakan demo browser client-side. Buka demo resmi untuk memastikan apakah mesin suara dapat berjalan pada browser HP kamu.</p><a class="primary" href="https://arbo-team.github.io/arbotts-demo/" target="_blank" rel="noopener">Buka Demo Resmi ArboTTS</a><p class="small">Catatan: demo resmi adalah situs terpisah. Halaman ini belum terhubung ke engine demo dan tidak menyimpan teks yang kamu masukkan di sana.</p></div>
+<div class="card"><h2>Yang perlu kamu laporkan</h2><p>Setelah mencoba demo resmi, beri tahu saya apakah suara berhasil dibuat dan diputar, atau muncul pesan error. Jangan tutup halaman sampai proses model selesai.</p></div>
+</main>
+<script>
+function row(label,value,cls=''){return '<div class="item"><span>'+label+'</span><span class="val '+cls+'">'+value+'</span></div>'}
+async function run(){
+const r=[];
+r.push(row('Browser',navigator.userAgent.includes('Chrome')?'Chromium / Chrome':navigator.userAgent.slice(0,45),''));
+r.push(row('WebAssembly',typeof WebAssembly==='object'?'Didukung':'Tidak didukung',typeof WebAssembly==='object'?'ok':'warn'));
+r.push(row('Web Worker',typeof Worker!=='undefined'?'Didukung':'Tidak didukung',typeof Worker!=='undefined'?'ok':'warn'));
+r.push(row('Audio output',('AudioContext'in window||'webkitAudioContext'in window)?'Didukung':'Tidak didukung',('AudioContext'in window||'webkitAudioContext'in window)?'ok':'warn'));
+r.push(row('WebGPU',navigator.gpu?'Tersedia':'Tidak terdeteksi',navigator.gpu?'ok':'warn'));
+r.push(row('Perkiraan RAM perangkat',navigator.deviceMemory?('± '+navigator.deviceMemory+' GB'):'Tidak diberikan browser',''));
+try{const estimate=await navigator.storage.estimate();r.push(row('Penyimpanan browser tersedia',estimate.quota?Math.round(estimate.quota/1024/1024)+' MB':'Tidak diketahui',''))}catch{r.push(row('Penyimpanan browser','Tidak dapat diperiksa',''))}
+document.getElementById('results').innerHTML=r.join('');
+}
+document.getElementById('refresh').addEventListener('click',run);run();
+</script></body></html>
