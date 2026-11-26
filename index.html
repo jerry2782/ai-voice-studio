@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Voice Studio V0.6.0</title>
+  <title>AI Voice Studio V0.6.1</title>
   <meta name="description" content="Studio sintesis suara Bahasa Indonesia dan Inggris berbasis browser dengan engine ArboTTS.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎙️</text></svg>">
   <style>
@@ -553,7 +553,7 @@
       <div class="logo-badge">
         <span>⚡</span> 100% Client-Side WebAssembly • 9 MB Nano • Zero Server Cost
       </div>
-      <h1>ArboTTS Studio 🎙️</h1>
+      <h1>AI Voice Studio 🎙️</h1>
       <p class="subtitle">
         Sintesis suara Text-to-Speech bilingual Bahasa Indonesia & Inggris alami berkarakter penyiar berita — ditenagai model ultra-ringan Paradee-8M (9 MB INT8) yang berjalan sepenuhnya di browser Anda pada kualitas studio 24 kHz, dengan 5 persona studio profesional dan Voice Cloning.
       </p>
@@ -569,7 +569,7 @@
     <!-- TABS NAVIGATION -->
     <div class="tabs-nav">
       <button id="tab-nav-studio" class="tab-btn active" type="button">
-        <span>🎭 Studio Karakter Bawaan (5 Persona Studio)</span>
+        <span>🎭 Voice Library · 5 Persona</span>
       </button>
       <button id="tab-nav-clone" class="tab-btn" type="button">
         <span>🎙️ Voice Cloning (Unggah Suara Sendiri)</span>
@@ -731,7 +731,7 @@
 
       <!-- AUDIO OUTPUT & METRICS -->
       <div id="output-section" class="output-card hidden">
-        <label>Hasil Audio Sintesis</label>
+        <label>Hasil Audio</label>
         <audio id="audio-player" controls></audio>
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
           <a id="btn-download" class="btn-download" href="#" download="arbotts_audio.wav">
