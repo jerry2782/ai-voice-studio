@@ -2,67 +2,38 @@
 <html lang="id"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#101426"><link rel="manifest" href="./manifest.json">
-<title>AI Voice Studio V0.3.4</title>
-<script src="https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js"></script>
+<title>AI Voice Studio V0.4.0 — ArboTTS</title>
 <style>
-:root{--bg:#f4f6fb;--panel:#fff;--soft:#eef1f8;--text:#182033;--muted:#69748a;--line:#e1e6f0;--accent:#6558e8}
-[data-theme=dark]{--bg:#0d1020;--panel:#171b2e;--soft:#202640;--text:#f2f4ff;--muted:#a6aec4;--line:#2c3450;--accent:#8a7dff}
+:root{color-scheme:dark;--bg:#0d1020;--panel:#171b2e;--text:#f2f4ff;--muted:#a6aec4;--line:#2c3450;--accent:#8a7dff}
+[data-theme=light]{color-scheme:light;--bg:#f4f6fb;--panel:#fff;--text:#182033;--muted:#69748a;--line:#e1e6f0;--accent:#6558e8}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,sans-serif}
-.app{min-height:100vh;display:grid;grid-template-columns:220px 1fr}.side{background:var(--panel);border-right:1px solid var(--line);padding:22px 15px}
-.brand{font-weight:800;font-size:18px;margin:5px 8px 25px}.nav button{display:block;width:100%;padding:12px;border:0;border-radius:10px;text-align:left;background:none;color:var(--muted);margin:4px 0}.nav button.active{background:var(--soft);color:var(--accent);font-weight:700}
-.note{margin-top:40px;padding:12px;border:1px solid var(--line);border-radius:12px;color:var(--muted);font-size:12px}
-.main{min-width:0}.top{height:64px;background:var(--panel);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 25px}
-.content{max-width:1050px;margin:auto;padding:28px}.page{display:none}.page.active{display:block}h1{font-size:28px;margin:5px 0 8px}.muted,.hint{color:var(--muted)}.hint{font-size:12px}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:17px;padding:20px;margin:14px 0}.grid{display:grid;grid-template-columns:1.3fr 1fr;gap:15px}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.stat{padding:15px;background:var(--panel);border:1px solid var(--line);border-radius:14px;margin:14px 0}.stat b{display:block;font-size:22px}
-label{display:block;font-weight:650;font-size:13px;margin:15px 0 7px}textarea,select{width:100%;padding:12px;border-radius:11px;border:1px solid var(--line);background:var(--bg);color:var(--text);font:inherit}textarea{min-height:140px}
-.row{display:flex;gap:10px}.row>div{flex:1;min-width:0}.voice{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:12px;padding:11px;margin:8px 0;cursor:pointer}.voice.selected{border-color:var(--accent);background:var(--soft)}.voice small{display:block;color:var(--muted)}.check{margin-left:auto;color:var(--accent)}
-.btn{border:0;border-radius:11px;padding:11px 15px;background:var(--accent);color:white;font-weight:700;cursor:pointer}.secondary{background:var(--soft);color:var(--text);border:1px solid var(--line)}.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}
-.status,.result{display:none;background:var(--soft);border:1px solid var(--line);padding:13px;border-radius:12px;margin-top:14px}.status.show,.result.show{display:block}.progress{height:7px;background:var(--line);border-radius:9px;margin-top:8px;overflow:hidden}.progress span{display:block;height:100%;background:var(--accent);width:0}.result audio{width:100%;margin:10px 0}
-.item{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}.pill{font-size:11px;color:#16845d;background:#16845d18;padding:4px 8px;border-radius:20px}.theme{padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--text)}.bottom{display:none}
-@media(max-width:760px){.app{display:block;padding-bottom:70px}.side{display:none}.top{height:58px;padding:0 14px;position:sticky;top:0;z-index:2}.content{padding:18px 13px}h1{font-size:24px}.grid{grid-template-columns:1fr}.card{padding:16px}.bottom{display:flex;position:fixed;bottom:0;left:0;right:0;justify-content:space-around;background:var(--panel);border-top:1px solid var(--line);padding:8px 0 calc(8px + env(safe-area-inset-bottom));z-index:5}.bottom button{border:0;background:none;color:var(--muted);font-size:10px}.bottom button.active{color:var(--accent);font-weight:700}.bottom span{display:block;font-size:18px}}
+header{height:62px;background:var(--panel);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 max(16px,calc((100% - 1000px)/2));position:sticky;top:0;z-index:3}
+main{max-width:1000px;margin:auto;padding:24px 16px 50px}.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px;margin:16px 0}
+h1{font-size:clamp(24px,5vw,34px);line-height:1.2;margin:12px 0}.muted{color:var(--muted)}
+button,.link{border:1px solid var(--line);border-radius:11px;padding:10px 14px;background:var(--panel);color:var(--text);font:inherit;text-decoration:none;cursor:pointer}
+.primary{background:var(--accent);border-color:var(--accent);color:white;font-weight:700}.tag{display:inline-block;color:#36c89b;background:#36c89b18;border-radius:20px;padding:5px 10px;font-size:12px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+iframe{display:block;width:100%;height:1050px;border:0;border-radius:12px;background:#0b0f19}
+.note{font-size:13px;color:var(--muted)}
+@media(max-width:600px){main{padding:16px 12px 35px}.card{padding:15px}iframe{height:1150px}}
 </style></head>
 <body data-theme="dark">
-<div class="app"><aside class="side"><div class="brand">〽 AI Voice Studio</div>
-<nav class="nav"><button class="active" data-page="home">⌂　Beranda</button><button data-page="create">🎙　Buat Suara</button><button data-page="voices">♬　Koleksi Suara</button><button data-page="audio">▤　Audio Saya</button><button data-page="settings">⚙　Pengaturan</button></nav>
-<div class="note">V0.3.4 · Browser-Based TTS<br>Tanpa backend dan API key.</div></aside>
-<main class="main"><header class="top"><b>AI Voice Studio <span class="hint">/ V0.3.4</span></b><button class="theme" id="themeBtn">☀ Light mode</button></header>
-<div class="content">
-<section class="page active" id="home"><p class="pill">Browser-Based TTS</p><h1>Buat suara jadi lebih mudah.</h1><p class="muted">Ubah tulisan menjadi suara AI langsung di HP atau PC.</p>
-<div class="card"><h2>Studio suara pribadi kamu</h2><p class="muted">Teks diproses di perangkat. Tidak perlu akun, server, atau API key.</p><button class="btn" onclick="showPage('create')">＋ Buat suara baru</button></div>
-<div class="stats"><div class="stat"><b id="statAudio">0</b><span class="hint">Audio dibuat</span></div><div class="stat"><b>4</b><span class="hint">Pilihan suara</span></div><div class="stat"><b>2</b><span class="hint">Tema tampilan</span></div></div>
-<div class="card"><b>Informasi penting</b><p class="hint">V0.3.4 memakai model Kokoro-82M. Pengunduhan pertama bisa puluhan hingga sekitar 100 MB. Model awal ini mendukung suara English, belum Bahasa Indonesia. Gunakan Wi-Fi dan perangkat dengan memori cukup.</p></div></section>
-<section class="page" id="create"><h1>Buat Suara Baru</h1><p class="muted">Generate audio di browser kamu.</p><div class="grid"><div class="card">
-<label for="script">Masukkan teks (English)</label><textarea id="script" maxlength="2500" placeholder="Type or paste your English text here..."></textarea><div class="hint" style="text-align:right"><span id="count">0</span>/2500</div>
-<div class="row"><div><label>Format download</label><select id="format"><option value="mp3">MP3</option><option value="wav">WAV</option></select></div><div><label>Kecepatan</label><select id="speed"><option value="1">Normal</option><option value=".85">Lambat</option><option value="1.15">Cepat</option></select></div></div>
-<label>Pilih suara</label>
-<div class="voice selected" data-voice="af_heart"><span>♀</span><div><b>Heart — Female US</b><small>Natural, warm · English</small></div><span class="check">✓</span></div>
-<div class="voice" data-voice="af_bella"><span>♀</span><div><b>Bella — Female US</b><small>Expressive · English</small></div></div>
-<div class="voice" data-voice="af_nova"><span>♀</span><div><b>Nova — Female US</b><small>Bright · English</small></div></div>
-<div class="voice" data-voice="am_michael"><span>♂</span><div><b>Michael — Male US</b><small>Clear · English</small></div></div>
-<div class="actions"><button class="btn" id="generate">✨ Generate Voice</button><button class="btn secondary" id="clear">Hapus teks</button></div>
-<div class="status" id="status"><div id="statusText">Memuat mesin suara...</div><div class="progress"><span id="progressBar"></span></div></div>
-<div class="result" id="result"><b>Audio berhasil dibuat</b><audio id="player" controls></audio><div class="actions"><button class="btn" id="download">⬇ Download audio</button></div><p class="hint" id="audioInfo"></p></div></div>
-<div class="card"><h3>Status mesin AI</h3><div class="item"><span>Engine</span><b>Kokoro-82M</b></div><div class="item"><span>Proses</span><b>Di browser</b></div><div class="item"><span>API key</span><span class="pill">Tidak perlu</span></div><div class="item"><span>Bahasa</span><b>English</b></div><p class="hint">Pertama kali perlu internet untuk mengunduh model. Setelah itu browser dapat menggunakan cache. Performa tergantung perangkat.</p></div></div></section>
-<section class="page" id="voices"><h1>Koleksi Suara</h1><div class="card"><div class="item"><b>Heart · Female US</b><span class="pill">Wanita</span></div><div class="item"><b>Bella · Female US</b><span class="pill">Wanita</span></div><div class="item"><b>Nova · Female US</b><span class="pill">Wanita</span></div><div class="item"><b>Michael · Male US</b><span class="pill">Pria</span></div></div></section>
-<section class="page" id="audio"><h1>Audio Saya</h1><p class="muted">Hasil audio selama sesi browser ini.</p><div class="card" id="audioList"><p class="muted">Belum ada audio yang dibuat.</p></div></section>
-<section class="page" id="settings"><h1>Pengaturan</h1><div class="card"><div class="item"><b>Tampilan</b><button class="btn secondary" id="themeBtn2">Ganti tema</button></div><div class="item"><b>Mesin suara</b><span class="pill">Kokoro · lokal</span></div><div class="item"><b>Privasi</b><span class="pill">Teks tidak dikirim</span></div></div></section>
-</div></main></div>
-<nav class="bottom"><button class="active" data-page="home"><span>⌂</span>Beranda</button><button data-page="create"><span>🎙</span>Buat</button><button data-page="voices"><span>♬</span>Suara</button><button data-page="audio"><span>▤</span>Audio</button><button data-page="settings"><span>⚙</span>Setelan</button></nav>
-<script type="module">
-
-const $=id=>document.getElementById(id);let ttsWorker=null,workerReady=false,loadPromise=null,voice='af_heart',blob=null,history=[];
-function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===id));document.querySelectorAll('[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===id));scrollTo(0,0)}window.showPage=showPage;document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>showPage(b.dataset.page));
-function theme(){const dark=document.body.dataset.theme!=='dark';document.body.dataset.theme=dark?'dark':'light';$('themeBtn').textContent=dark?'☀ Light mode':'☾ Dark mode';localStorage.setItem('avs-theme',document.body.dataset.theme)}if(localStorage.getItem('avs-theme'))document.body.dataset.theme=localStorage.getItem('avs-theme');$('themeBtn').textContent=document.body.dataset.theme==='dark'?'☀ Light mode':'☾ Dark mode';$('themeBtn').onclick=$('themeBtn2').onclick=theme;
-$('script').oninput=()=>$('count').textContent=$('script').value.length;document.querySelectorAll('.voice').forEach(b=>b.onclick=()=>{document.querySelectorAll('.voice').forEach(x=>{x.classList.remove('selected');x.querySelector('.check')?.remove()});b.classList.add('selected');const c=document.createElement('span');c.className='check';c.textContent='✓';b.append(c);voice=b.dataset.voice});
-function status(t,p){$('status').classList.add('show');$('statusText').textContent=t;$('progressBar').style.width=p+'%'}
-function setupWorker(){if(ttsWorker)return;ttsWorker=new Worker('./tts-worker.js?v=034',{type:'module'});ttsWorker.onmessage=e=>{const d=e.data;if(d.type==='progress')status('Memuat model: '+(d.status||'download')+' '+Math.round(d.progress||0)+'%',d.progress||5);if(d.type==='ready'){workerReady=true;status('Mesin suara siap.',100);if(loadPromise){loadPromise.resolve();loadPromise=null}}if(d.type==='audio'&&window._ttsResolve){window._ttsResolve(d);window._ttsResolve=null}if(d.type==='error'){const err=new Error(d.message||'Gagal memuat mesin suara');if(loadPromise){loadPromise.reject(err);loadPromise=null}if(window._ttsReject){window._ttsReject(err);window._ttsReject=null}}};ttsWorker.onerror=e=>{const err=new Error(e.message||'Worker TTS gagal dijalankan');if(loadPromise){loadPromise.reject(err);loadPromise=null}if(window._ttsReject){window._ttsReject(err);window._ttsReject=null}}}
-async function load(){if(workerReady)return;setupWorker();if(loadPromise)return loadPromise.promise;status('Menyiapkan mesin suara di worker...',5);let resolve,reject;const promise=new Promise((a,b)=>{resolve=a;reject=b});loadPromise={promise,resolve,reject};ttsWorker.postMessage({type:'load'});return promise}
-function generateWithWorker(text,voice,speed){return new Promise((resolve,reject)=>{window._ttsResolve=resolve;window._ttsReject=reject;ttsWorker.postMessage({type:'generate',text,voice,speed})})}
-function wav(samples,rate){const pcm=new Int16Array(samples.length);for(let i=0;i<samples.length;i++)pcm[i]=Math.max(-32768,Math.min(32767,samples[i]*32767));const b=new ArrayBuffer(44+pcm.length*2),v=new DataView(b),w=(o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i))};w(0,'RIFF');v.setUint32(4,36+pcm.length*2,true);w(8,'WAVE');w(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,rate,true);v.setUint32(28,rate*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);w(36,'data');v.setUint32(40,pcm.length*2,true);new Int16Array(b,44).set(pcm);return new Blob([b],{type:'audio/wav'})}
-function mp3(samples,rate){if(!window.lamejs?.Mp3Encoder)throw Error('Encoder MP3 belum termuat. Muat ulang halaman atau pilih WAV.');const enc=new lamejs.Mp3Encoder(1,rate,128),pcm=new Int16Array(samples.length),chunks=[];for(let i=0;i<samples.length;i++)pcm[i]=Math.max(-32768,Math.min(32767,samples[i]*32767));for(let i=0;i<pcm.length;i+=1152){const c=enc.encodeBuffer(pcm.subarray(i,i+1152));if(c.length)chunks.push(new Uint8Array(c))}const end=enc.flush();if(end.length)chunks.push(new Uint8Array(end));return new Blob(chunks,{type:'audio/mpeg'})}
-function save(b,name){const u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),20000)}
-$('generate').onclick=async()=>{const text=$('script').value.trim();if(!text)return alert('Masukkan teks terlebih dahulu.');$('generate').disabled=true;$('result').classList.remove('show');try{await load();status('Menghasilkan suara...',20);const out=await generateWithWorker(text,voice,Number($('speed').value));const fmt=$('format').value;blob=fmt==='mp3'?mp3(out.audio,out.sampling_rate):wav(out.audio,out.sampling_rate);const url=URL.createObjectURL(blob);$('player').src=url;$('audioInfo').textContent=voice+' · '+out.sampling_rate+' Hz · '+fmt.toUpperCase();$('result').classList.add('show');const name='ai-voice-'+Date.now()+'.'+fmt;$('download').onclick=()=>save(blob,name);history.unshift({name,blob});$('statAudio').textContent=history.length;$('audioList').innerHTML='';history.forEach(x=>{const row=document.createElement('div');row.className='item';const title=document.createElement('b');title.textContent=x.name;const btn=document.createElement('button');btn.className='btn secondary';btn.textContent='Download';btn.onclick=()=>save(x.blob,x.name);row.append(title,btn);$('audioList').append(row)});status('Selesai! Audio siap diputar dan diunduh.',100)}catch(e){status('Gagal: '+(e.message||e),0);alert('Tidak berhasil membuat suara. '+(e.message||e))}finally{$('generate').disabled=false}};
-$('clear').onclick=()=>{$('script').value='';$('count').textContent='0';$('result').classList.remove('show');$('status').classList.remove('show')};
+<header><b>🎙️ AI Voice Studio <span class="muted">/ V0.4.0</span></b><button id="theme">☀ Light mode</button></header>
+<main>
+<section><span class="tag">ArboTTS · Browser WebAssembly</span><h1>Buat suara Indonesia dan Inggris.</h1>
+<p class="muted">Mesin suara diganti ke ArboTTS. Proses berjalan di browser, tanpa backend, akun API, atau kartu kredit.</p></section>
+<div class="card"><h2>Studio ArboTTS</h2><p class="muted">Studio resmi ArboTTS dimuat di bawah ini. Jika tidak tampil di dalam halaman, gunakan tombol Buka Studio.</p>
+<div class="actions"><a class="link primary" href="https://arbo-team.github.io/arbotts-demo/" target="_blank" rel="noopener">Buka Studio ArboTTS ↗</a><button id="reload">Muat ulang studio</button></div>
+<p class="note">Model Nano yang didokumentasikan berukuran sekitar 8,62 MB. Pengunduhan model dan runtime memerlukan internet pada penggunaan pertama. Kinerja bergantung pada browser dan perangkat.</p>
+</div>
+<div class="card" style="padding:8px"><iframe id="studio" title="ArboTTS official browser studio" src="https://arbo-team.github.io/arbotts-demo/" loading="eager" allow="autoplay"></iframe></div>
+<div class="card"><b>Catatan versi 0.4.0</b><p class="note">Demo resmi yang dipakai sebagai mesin awal menampilkan ekspor WAV. MP3 langsung dari antarmuka ArboTTS belum dijanjikan pada versi ini. Persona suara dan pilihan bahasa yang tersedia mengikuti demo resmi.</p></div>
+</main>
+<script>
+const root=document.body,theme=document.getElementById('theme');
+function setTheme(v){root.dataset.theme=v;theme.textContent=v==='dark'?'☀ Light mode':'☾ Dark mode';try{localStorage.setItem('avs-theme',v)}catch(e){}}
+try{setTheme(localStorage.getItem('avs-theme')||'dark')}catch(e){setTheme('dark')}
+theme.onclick=()=>setTheme(root.dataset.theme==='dark'?'light':'dark');
+document.getElementById('reload').onclick=()=>{document.getElementById('studio').src='https://arbo-team.github.io/arbotts-demo/?refresh='+Date.now()};
 if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
 </script></body></html>
