@@ -1,4 +1,4 @@
-const CACHE='ai-voice-studio-v060';
+const CACHE='ai-voice-studio-v061';
 const FILES=['./','./index.html','./manifest.json','./app.js','./g2p.js','./en_dict.js','./dsp.js','./wav.js','./models/vocab.json'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(FILES)));self.skipWaiting();});
 self.addEventListener('activate',event=>event.waitUntil((async()=>{const keys=await caches.keys();await Promise.all(keys.filter(key=>key.startsWith('ai-voice-studio-')&&key!==CACHE).map(key=>caches.delete(key)));await self.clients.claim();})()));
