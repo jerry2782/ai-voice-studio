@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Voice Studio V0.6.0 — Native ArboTTS Engine</title>
-  <meta name="description" content="Demo sintesis suara Text-to-Speech bilingual Bahasa Indonesia & Inggris 100% di browser tanpa server menggunakan WebAssembly ONNX Runtime dan Voice Cloning in-context.">
+  <title>AI Voice Studio V0.6.0</title>
+  <meta name="description" content="Studio sintesis suara Bahasa Indonesia dan Inggris berbasis browser dengan engine ArboTTS.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎙️</text></svg>">
   <style>
     :root {
@@ -514,6 +514,26 @@
       .metrics-grid { grid-template-columns: 1fr 1fr; }
       .speakers-grid { grid-template-columns: 1fr 1fr; }
     }
+  
+    /* AI Voice Studio mobile-first adjustments */
+    body { padding: 16px 12px calc(24px + env(safe-area-inset-bottom)); }
+    .container { max-width: 760px; gap: 14px; }
+    header { padding: 8px 0 12px; }
+    h1 { font-size: clamp(1.55rem, 7vw, 2.2rem); }
+    .card { padding: clamp(14px, 4vw, 24px); }
+    .speakers-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .speaker-card { min-width: 0; }
+    .controls-grid { grid-template-columns: 1fr; gap: 10px; }
+    .metrics-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .btn-download { min-height: 44px; }
+    button, .speaker-card, input[type="range"] { touch-action: manipulation; }
+    @media (min-width: 680px) {
+      body { padding: 24px 16px; }
+      .container { max-width: 860px; gap: 20px; }
+      .controls-grid { grid-template-columns: 1fr 1fr; }
+      .metrics-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+
   </style>
   <!-- ONNX Runtime Web (WASM SIMD engine) -->
   <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/ort.all.min.js"></script>
