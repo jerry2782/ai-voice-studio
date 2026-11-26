@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="id"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101426"><title>AI Voice Studio V0.5.0</title>
+<style>
+:root{color-scheme:dark;--bg:#0d1020;--panel:#171b2e;--text:#f2f4ff;--muted:#a6aec4;--line:#303954;--accent:#8a7dff;--ok:#35c99a}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,sans-serif}
+header{position:sticky;top:0;background:var(--panel);border-bottom:1px solid var(--line);padding:15px 18px;z-index:2}
+main{max-width:760px;margin:auto;padding:18px 14px 50px}.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:17px;margin:14px 0}
+h1{font-size:25px;margin:12px 0 4px}h2{font-size:18px;margin:0 0 12px}.muted,.hint{color:var(--muted)}.hint{font-size:13px}
+label{display:block;font-weight:650;font-size:13px;margin:13px 0 6px}
+input,select,textarea{width:100%;padding:12px;border:1px solid var(--line);border-radius:11px;background:#0d1224;color:var(--text);font:inherit}
+textarea{min-height:150px;resize:vertical}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+button,a.btn{display:inline-flex;justify-content:center;align-items:center;gap:7px;border:1px solid var(--line);border-radius:11px;padding:12px 15px;background:#202744;color:var(--text);font:inherit;text-decoration:none;cursor:pointer}
+button.primary{background:var(--accent);border-color:var(--accent);color:white;font-weight:750;width:100%;margin-top:16px}
+button:disabled{opacity:.55;cursor:wait}.status{padding:11px 13px;border-radius:10px;background:#0d1224;color:var(--muted);font-size:13px;margin-top:12px}
+audio{width:100%;margin-top:10px}.pill{display:inline-block;border-radius:20px;padding:4px 9px;background:#35c99a1c;color:var(--ok);font-size:12px}
+@media(max-width:520px){.grid{grid-template-columns:1fr}main{padding:14px 11px 35px}}
+</style></head>
+<body><header><b>🎙️ AI Voice Studio <span class="muted">/ V0.5.0</span></b><div class="hint">Laptop Engine · Mobile Controller</div></header>
+<main>
+<section><span class="pill">Kokoro ONNX · Indonesian native G2P</span><h1>Studio Suara Indonesia</h1><p class="muted">HP menjadi panel kontrol. Laptop menjalankan mesin TTS secara lokal melalui Wi-Fi yang sama.</p></section>
+<div class="card"><h2>1. Hubungkan ke laptop</h2>
+<label>Alamat server laptop</label><input id="api" value="http://192.168.1.10:8000" inputmode="url" autocomplete="url">
+<p class="hint">Ganti alamat IP contoh ini dengan alamat IPv4 laptop. Port API harus 8000.</p>
+<button id="check">Periksa koneksi</button><div id="connection" class="status">Belum diperiksa.</div></div>
+<div class="card"><h2>2. Buat suara</h2>
+<label for="text">Teks yang akan dibacakan</label><textarea id="text" maxlength="5000" placeholder="Ketik teks Bahasa Indonesia di sini...">Halo! Selamat datang di AI Voice Studio. Sekarang kita membuat suara Bahasa Indonesia dengan pengucapan yang lebih alami.</textarea>
+<div class="grid"><div><label for="lang">Bahasa</label><select id="lang"><option value="id">🇮🇩 Bahasa Indonesia</option><option value="en">🇬🇧 English</option></select></div>
+<div><label for="voice">Karakter suara</label><select id="voice"><option value="arbo">Arbo — Pria, penyiar</option><option value="bimo">Bimo — Pria, berat</option><option value="dimas">Dimas — Pria, kasual</option><option value="danu">Danu — Pria, narator</option><option value="arba">Arba — Wanita, presenter</option><option value="sita">Sita — Wanita, asisten</option><option value="maya">Maya — Wanita, narator</option></select></div></div>
+<label for="speed">Kecepatan bicara: <span id="speedVal">0.95×</span></label><input id="speed" type="range" min="0.65" max="1.25" step="0.05" value="0.95">
+<button class="primary" id="generate">✨ Generate suara</button><div id="status" class="status">Siap. Hubungkan ke laptop terlebih dahulu.</div>
+</div>
+<div class="card" id="result" hidden><h2>3. Hasil audio</h2><audio id="player" controls></audio><p class="hint" id="meta"></p><a id="download" class="btn" download="ai-voice-studio.wav">⬇ Unduh WAV</a></div>
+<div class="card"><h2>Catatan penting</h2><p class="hint">Model Kokoro pertama kali dijalankan di laptop dan perlu mengunduh model serta voice pack (sekitar 88 MB untuk model, belum termasuk runtime). Setelah tersimpan di cache laptop, model tidak perlu diunduh ulang setiap kali. HP dan laptop harus berada pada Wi-Fi yang sama. Tidak memerlukan kartu kredit atau server cloud.</p><p class="hint">Untuk privasi, gunakan jaringan Wi-Fi pribadi dan hentikan server saat tidak digunakan. Jangan membuka port server ke internet publik.</p></div>
+</main>
+<script>
+const $=id=>document.getElementById(id);let audioUrl=null;
+$('speed').addEventListener('input',()=> $('speedVal').textContent=Number($('speed').value).toFixed(2)+'×');
+function base(){return $('api').value.trim().replace(/\/$/,'')}
+async function check(){ $('connection').textContent='Memeriksa laptop...';try{const r=await fetch(base()+'/health');if(!r.ok)throw Error('HTTP '+r.status);const d=await r.json();$('connection').textContent='Terhubung ✓ Mesin merespons ('+(d.version||'ArboTTS')+').';return true}catch(e){$('connection').textContent='Belum terhubung: '+e.message+'. Periksa IP, Wi-Fi, firewall, dan server laptop.';return false}}
+$('check').onclick=check;
+$('generate').onclick=async()=>{const text=$('text').value.trim();if(!text){$('status').textContent='Masukkan teks terlebih dahulu.';return}
+const b=$('generate');b.disabled=true;$('status').textContent='Mengirim teks ke laptop. Jika ini pertama kali, model Kokoro sedang diunduh dan dimuat...';
+try{const r=await fetch(base()+'/v1/audio/speech',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({input:text,voice:$('voice').value,lang:$('lang').value,tier:'kokoro',speed:Number($('speed').value),response_format:'wav'})});
+if(!r.ok){let msg='HTTP '+r.status;try{const j=await r.json();msg=j.detail||msg}catch{}throw Error(msg)}
+const blob=await r.blob();if(audioUrl)URL.revokeObjectURL(audioUrl);audioUrl=URL.createObjectURL(blob);$('player').src=audioUrl;$('download').href=audioUrl;$('result').hidden=false;
+const dur=r.headers.get('X-Duration-Sec')||'?';const latency=r.headers.get('X-Latency-Ms')||'?';$('meta').textContent='Kokoro ONNX · '+dur+' detik audio · proses '+latency+' ms · format WAV';$('status').textContent='Selesai! Audio berhasil dibuat.';$('player').play().catch(()=>{});
+}catch(e){$('status').textContent='Gagal membuat suara: '+e.message+'. Pastikan server laptop aktif dan alamat IP benar.'}finally{b.disabled=false}}
+try{const saved=localStorage.getItem('avs-laptop-api');if(saved)$('api').value=saved;$('api').addEventListener('change',()=>localStorage.setItem('avs-laptop-api',$('api').value))}catch{}
+</script></body></html>
